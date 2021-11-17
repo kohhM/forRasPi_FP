@@ -48,19 +48,17 @@ def sleepBC():
         try:
             device.send_data_broadcast(DATA_TO_SEND)
             print("sleep")
-            sleep(10)
-
+            sleep(40)
         except:
-            print('except')
             pass
-
+        
         finally:
             if SM == 0:
-                print("sleep stop")
+                print("sleep finish")
                 break
 
 def main():
-
+    
     print(" +---------------------+")
     print(" | IM920sL and XBee R4 |")
     print(" +---------------------+\n")
