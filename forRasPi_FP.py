@@ -1,4 +1,4 @@
-#test
+
 from digi.xbee.devices import XBeeDevice
 from digi.xbee.models.status import NetworkDiscoverStatus
 import im_wireless as imw
@@ -16,8 +16,8 @@ SLAVE_ADR = 0x30
 iwc = imw.IMWireClass(SLAVE_ADR)
 iwc.gpio_clean()
 
-#global SM  #1のときsleep,0のとき通常動作,2のときsleep解除動作
 SM = 1
+# 1のときsleep,0のとき通常動作
 
 def recIM920():
     global SM
@@ -31,7 +31,8 @@ def recIM920():
                 if(rx_xbeestate == '1'):
                     SM = 1
                 elif(rx_xbeestate == '2'):
-                    SM = 2
+                    SM = 0
+                    # ここよくわかんないけど，なんとなく書き換えました
 
 
 def sendIM(mesC):
@@ -48,41 +49,18 @@ def sleepBC():
             device.send_data_broadcast(DATA_TO_SEND)
             print("sleep")
             sleep(10)
-            
+
         except:
             print('except')
             pass
-        
+
         finally:
-            if SM == 2:
+            if SM == 0:
                 print("sleep stop")
                 break
-        
-def wakeupBC():
-        global SM
-        senL = ['S101']
-
-        DATA_TO_SEND = 'wakeUp'
-        print('wakeUp')
-        while len(senL) != 0:
-                device.send_data_broadcast(DATA_TO_SEND)
-
-                xbee_message = device.read_data()
-                addr = xbee_message.remote_device.get_64bit_addr()
-                mes = xbee_message.data.decode()
-                if mes[-6:] == 'wakeUp':
-                    try:
-                        senL.remove(mes[:4])
-                        SM = 0
-                        print(SM)
-                        print("wakeup stop")
-                        break
-                        
-                    except ValueError:
-                        pass
 
 def main():
-    
+
     print(" +---------------------+")
     print(" | IM920sL and XBee R3 |")
     print(" +---------------------+\n")
@@ -92,8 +70,6 @@ def main():
     try:
         device.open()
 
-        device.flush_queues()
-        
         xbee_network = device.get_network()
         xbee_network.set_discovery_timeout(15)
         xbee_network.clear()
@@ -120,11 +96,7 @@ def main():
         while True:
             try:
                 if SM == 1:
-                    print("sleep start")
                     sleepBC()
-                elif SM == 2:
-                    print("wakeup start")
-                    wakeupBC()
                 elif SM == 0:
                     xbee_message = device.read_data()
                     if xbee_message is not None:
@@ -136,16 +108,7 @@ def main():
                         addr = xbee_message.remote_device.get_64bit_addr()
                         mes = xbee_message.data.decode()
 
-                        remote_device = xbee_network.discover_device(mes[:4])
-                        if remote_device is None:
-                            print("Could not find the remote device")
-                            
-                        else:
-                            device.send_data(remote_device,mes)
-                            print("Success")
-
                         sendIM(mes)
-            
             except:
                 pass
 
@@ -153,7 +116,6 @@ def main():
         iwc.gpio_clean()
         if device is not None and device.is_open():
             device.close()
-
 
 if __name__ == '__main__':
     thread1 = threading.Thread(target = recIM920)
