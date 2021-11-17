@@ -62,7 +62,7 @@ def sleepBC():
 def main():
 
     print(" +---------------------+")
-    print(" | IM920sL and XBee R3 |")
+    print(" | IM920sL and XBee R4 |")
     print(" +---------------------+\n")
 
     iwc.Write_920('ECIO')
@@ -84,13 +84,9 @@ def main():
                 print("There was an error discovering devices: %s" % status.description)
 
         xbee_network.add_device_discovered_callback(callback_device_discovered)
-
         xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
-
         xbee_network.start_discovery_process()
-
         print("Discovering remote XBee devices...")
-
         print("Waiting for data...\n")
 
         while True:
@@ -103,9 +99,9 @@ def main():
 
                         xbee_network = device.get_network()
 
-                        print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
+                        print("From %s >> %s" % (xbee_message.remote_device.node_id(),
                                                  xbee_message.data.decode()))
-                        addr = xbee_message.remote_device.get_64bit_addr()
+                        addr = xbee_message.remote_device.node_id()
                         mes = xbee_message.data.decode()
 
                         sendIM(mes)
