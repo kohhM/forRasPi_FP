@@ -49,7 +49,7 @@ class IMWireClass:
         
         # GPIO割り込み設定　必要に応じてXMITやSLEEPも使用
         GPIO.add_event_detect(IRQ_PIN, GPIO.RISING, callback=self.irq_intrpt, bouncetime=5)
-        #GPIO.add_event_detect(XMIT_PIN, GPIO.RISING, callback=self.xmit_intrpt, bouncetime=1)
+        GPIO.add_event_detect(XMIT_PIN, GPIO.RISING, callback=self.xmit_intrpt, bouncetime=1)
         #GPIO.add_event_detect(SLEEP_PIN, GPIO.RISING, callback=self.slp_intrpt, bouncetime=1)
 
         self.Reboot_920()
