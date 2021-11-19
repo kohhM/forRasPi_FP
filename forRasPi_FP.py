@@ -48,7 +48,7 @@ def sleepBC():
         try:
             device.send_data_broadcast(DATA_TO_SEND)
             print("sleep")
-            sleep(40)
+            sleep(5)
         except:
             pass
         
