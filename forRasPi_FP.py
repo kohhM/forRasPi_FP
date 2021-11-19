@@ -1,6 +1,6 @@
 #test
 from digi.xbee.devices import XBeeDevice
-from digi.xbee.models.status import NetworkDiscoverStatus
+from digi.xbee.models.status import NetworkDiscoveryStatus
 import im_wireless as imw
 import threading
 from time import sleep
@@ -14,7 +14,6 @@ device = XBeeDevice(PORT,BAUD_RATE)
 SLAVE_ADR = 0x30
 
 iwc = imw.IMWireClass(SLAVE_ADR)
-iwc.gpio_clean()
 
 #global SM  #1のときsleep,0のとき通常動作,2のときsleep解除動作
 SM = 1
