@@ -31,7 +31,6 @@ def recIM920():
                     SM = 1
                 elif(rx_xbeestate == '2'):
                     SM = 0
-                    # ここよくわかんないけど，なんとなく書き換えました
 
 
 def sendIM(mesC):
@@ -96,9 +95,9 @@ def main():
 
                         xbee_network = device.get_network()
 
-                        print("From %s >> %s" % (xbee_message.remote_device.node_id(),
+                        print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
                                                  xbee_message.data.decode()))
-                        addr = xbee_message.remote_device.node_id()
+                        addr = xbee_message.remote_device.get_64bit_addr()
                         mes = xbee_message.data.decode()
 
                         sendIM(mes)
