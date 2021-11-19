@@ -14,7 +14,6 @@ device = XBeeDevice(PORT,BAUD_RATE)
 SLAVE_ADR = 0x30
 
 iwc = imw.IMWireClass(SLAVE_ADR)
-iwc.gpio_clean()
 
 SM = 1
 # 1のときsleep,0のとき通常動作
