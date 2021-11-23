@@ -29,7 +29,7 @@ def recIM920():
                 print(rx_xbeestate)
                 if(rx_xbeestate == '1'):
                     SM = 1
-                elif(rx_xbeestate == ''):
+                elif(rx_xbeestate == '0'):
                     SM = 0
 
 
