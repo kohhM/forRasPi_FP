@@ -1,3 +1,4 @@
+#pip install XBeeDevice
 
 from digi.xbee.devices import XBeeDevice
 from digi.xbee.models.status import NetworkDiscoveryStatus
@@ -15,48 +16,37 @@ SLAVE_ADR = 0x30
 
 iwc = imw.IMWireClass(SLAVE_ADR)
 
-SM = 1
-# 1のときsleep,0のとき通常動作
-
-def recIM920():
-    global SM
-    while True:
-        rx_data = iwc.Read_920()                        # 受信処理           
-        if len(rx_data) >= 11:                          # 11は受信データのノード番号+RSSI等の長さ
-            if (rx_data[2]==',' and    
-                rx_data[7]==',' and rx_data[10]==':'):
-                rx_xbeestate = rx_data[11:12]
-                print(rx_xbeestate)
-                if(rx_xbeestate == '1'):
-                    SM = 1
-                elif(rx_xbeestate == '0'):
-                    SM = 0
-
+bldnumber = '001'      #各建物ごとに変える
+state = 1
 
 def sendIM(mesC):
     if mesC[4:] == 'mdt':
-        iwc.Write_920('txdu0001,'+mesC[1:4])
-        print(mesC[1:4])
+        iwc.Write_920('txdu0001,'+mesC[:4])
+        print(mesC[:4])
     else:
         pass
 
-def sleepBC():
-    DATA_TO_SEND = 'sleep'
+def recIM920():
+    global state
     while True:
-        try:
-            device.send_data_broadcast(DATA_TO_SEND)
-            print("sleep")
-            sleep(5)
-        except:
-            pass
-        
-        finally:
-            if SM == 0:
-                print("sleep finish")
-                break
+        rx_data = iwc.Read_920()
+        if len(rx_data) >= 11:                          # 11は受信データのノード番号+RSSI等の長さ
+            if (rx_data[2]==',' and    
+                rx_data[7]==',' and rx_data[10]==':'):
+                rx_data = rx_data[11:15]
+                print(rx_data)
+
+                if rx_data == bldnumber +'0' or rx_data == '0000':
+                    state = 0
+                    print('OK')
+                elif rx_data == bldnumber +'1' or rx_data == '0001':
+                    state = 1
+                    print('NG')
+                else:
+                    pass
 
 def main():
-    
+    global state
     print(" +---------------------+")
     print(" | IM920sL and XBee R4 |")
     print(" +---------------------+\n")
@@ -87,20 +77,20 @@ def main():
 
         while True:
             try:
-                if SM == 1:
-                    sleepBC()
-                elif SM == 0:
-                    xbee_message = device.read_data()
-                    if xbee_message is not None:
+                xbee_message = device.read_data()
+                if xbee_message is not None:
 
-                        xbee_network = device.get_network()
+                    xbee_network = device.get_network()
 
-                        print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
-                                                 xbee_message.data.decode()))
-                        addr = xbee_message.remote_device.get_64bit_addr()
-                        mes = xbee_message.data.decode()
+                    print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
+                                             xbee_message.data.decode()))
+                    addr = xbee_message.remote_device.get_64bit_addr()
+                    mes = xbee_message.data.decode()
 
+                    if state == 0:
                         sendIM(mes)
+                    else:
+                        pass
             except:
                 pass
 
